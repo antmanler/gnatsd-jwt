@@ -1,0 +1,15 @@
+{
+    "signing": {
+        "default": {
+            "expiry": "43800h"
+        },
+        "profiles": {
+            "signing": {
+                "usages": [
+                    "digital signature"
+                ],
+                "expiry": "43800h"
+            }
+        }
+    }
+}

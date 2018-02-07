@@ -1,0 +1,12 @@
+{
+    "user": "req",
+    "permissions": {
+        "publish": [
+            "req.foo",
+            "req.bar"
+        ],
+        "subscribe": [
+            "_INBOX.*.*"
+        ]
+    }
+}

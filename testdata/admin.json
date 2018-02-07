@@ -1,0 +1,11 @@
+{
+    "user": "admin",
+    "permissions": {
+        "publish": [
+            ">"
+        ],
+        "subscribe": [
+            ">"
+        ]
+    }
+}
