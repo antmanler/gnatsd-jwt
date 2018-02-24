@@ -22,9 +22,9 @@ var _ server.Authentication = (*JWTAuth)(nil)
 type userModel struct {
 	Subject     string              `json:"sub"`
 	ExpiresAt   *int64              `json:"exp,omitempty"`
-	User        string              `json:"user"`
-	Name        string              `json:"name"`
-	Permissions *server.Permissions `json:"permissions"`
+	User        string              `json:"user,omitempty"`
+	Name        string              `json:"name,omitempty"`
+	Permissions *server.Permissions `json:"permissions,omitempty"`
 }
 
 // Check returns true if connection is valid
@@ -55,6 +55,10 @@ func (auth *JWTAuth) Check(c server.ClientAuthentication) bool {
 	} else if claims.Name != "" {
 		user.Username = claims.Name
 	}
+	if user.Username == "" {
+		auth.Errorf("User name is required")
+		return false
+	}
 	if claims.Permissions != nil {
 		// check permissions
 		if func() bool {
@@ -75,7 +79,7 @@ func (auth *JWTAuth) Check(c server.ClientAuthentication) bool {
 			user.Permissions = claims.Permissions
 		}
 	}
-	auth.Debugf("verified user %q, with perms %v", user.Username, user.Permissions != nil)
+	auth.Debugf("Verified user %q, with perms %v", user.Username, user.Permissions != nil)
 	c.RegisterUser(&user)
 	return true
 }

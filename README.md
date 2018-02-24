@@ -1,5 +1,5 @@
 # gnatsd-jwt
-NATS server with a  simple jwt auth backend
+NATS server with a simple JWT auth backend
 
 ## Try it
 

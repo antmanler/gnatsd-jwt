@@ -7,7 +7,9 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"os"
+	"path/filepath"
 
 	"github.com/antmanler/gnatsd-jwt/jwtauth"
 	"github.com/nats-io/gnatsd/server"
@@ -34,8 +36,8 @@ Logging Options:
 Authorization Options:
         --user <user>                User required for connections
         --pass <password>            Password required for connections
-		--auth <token>               Authorization token required for connections
-		--jwt_publickey <file>       Public key for JWT
+        --auth <token>               Authorization token required for connections
+        --jwt_publickey <file>       File name or folder name to load public key(s) for JWT
 TLS Options:
         --tls                        Enable TLS, do not verify clients (default: false)
         --tlscert <file>             Server certificate file
@@ -65,7 +67,7 @@ func main() {
 	fs.Usage = usage
 
 	var pkName string
-	fs.StringVar(&pkName, "jwt_publickey", "", "Public key for JWT.")
+	fs.StringVar(&pkName, "jwt_publickey", "", "File name or folder name to load public key(s) for JWT.")
 
 	// Configure the options from the flags/config file
 	opts, err := server.ConfigureOptions(fs, os.Args[1:],
@@ -78,12 +80,31 @@ func main() {
 
 	var jwtAuther *jwtauth.JWTAuth
 	if pkName != "" {
-		keyPriverder, err := jwtauth.NewLazyPublicKeyFileProvider(pkName)
+		fi, err := os.Stat(pkName)
 		if err != nil {
 			server.PrintAndDie(err.Error() + "\n" + usageStr)
+			return
+		}
+		var pkeys []jwtauth.KeyProvider
+		if fi.Mode().IsDir() {
+			files, err := ioutil.ReadDir(pkName)
+			server.PrintAndDie(err.Error() + "\n" + usageStr)
+			for _, fi := range files {
+				proivder, err := jwtauth.NewLazyPublicKeyFileProvider(filepath.Join(pkName, fi.Name()))
+				if err != nil {
+					server.PrintAndDie(err.Error() + "\n" + usageStr)
+				}
+				pkeys = append(pkeys, proivder)
+			}
+		} else {
+			proivder, err := jwtauth.NewLazyPublicKeyFileProvider(pkName)
+			if err != nil {
+				server.PrintAndDie(err.Error() + "\n" + usageStr)
+			}
+			pkeys = []jwtauth.KeyProvider{proivder}
 		}
 		jwtAuther = &jwtauth.JWTAuth{
-			PublicKeys: []jwtauth.KeyProvider{keyPriverder},
+			PublicKeys: pkeys,
 		}
 		opts.CustomClientAuthentication = jwtAuther
 	}
