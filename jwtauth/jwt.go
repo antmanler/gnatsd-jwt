@@ -129,10 +129,13 @@ func (auth *JWTAuth) verify(uToken string) (token *jwt.Token, err error) {
 	return
 }
 
+// StrictMode is a global config if true, any token without exp will be rejected
+var StrictMode = false
+
 // Valid lets us use the user info as Claim for jwt-go.
 // It checks the token expiry.
 func (u userModel) Valid() error {
-	if u.ExpiresAt == nil {
+	if u.ExpiresAt == nil && !StrictMode {
 		return nil
 	}
 	if *u.ExpiresAt < jwt.TimeFunc().Unix() {

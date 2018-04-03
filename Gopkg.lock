@@ -16,8 +16,8 @@
     "server/pse",
     "util"
   ]
-  revision = "12a5ced612f30aa511906c0de12a124233752f70"
-  version = "v1.0.4"
+  revision = "add6d7930ae6d4bff8823b28999ea87bf1bfd23d"
+  version = "v1.1.0"
 
 [[projects]]
   name = "github.com/nats-io/nuid"
@@ -52,6 +52,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "d68a987dfe3afa24c7f54c787c48762121aa5c9cd3fc64654e4e1d3c82a84b12"
+  inputs-digest = "392766971742e5332533f40ea64dd9e182f258a7c582c07ae3910ca787d34fea"
   solver-name = "gps-cdcl"
   solver-version = 1
